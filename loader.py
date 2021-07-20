@@ -2,22 +2,79 @@ from RoadImage import *
 from Dataset import *
 import os
 
-class ImgLoader():
+class ImgLoader(): 
     def __init__(self):
         self.images = []
         self.truth = []
         self.pred = []
         self.image_data = []
+        # self.mu = 0
+        # self.sigma = 1000
 
+    def reset(self):
+        self.images = []
+        self.truth = []
+        self.pred = []
+        self.image_data = []
 
     def generate(self, horizon, road_width, shoulder, offset, rotation, paint_width, directory, truth_line):
-        img = RoadImage(1000, 750, bg_color = (79, 95, 240))
+        img = RoadImage(500, 375, bg_color = (79, 95, 240))
         self.images.append(img)
-
         truth = img.create(horizon, road_width, shoulder, offset, rotation, paint_width, directory, truth_line)
-        self.truth.append(truth)
         
+        # generating random truth values
+        # t1 = np.random.uniform(0, 500, 1)
+        # t2 = np.random.uniform(0, 500, 1)
+        # self.truth.append([float(t1), float(t2)])
+
+        # self.truth.append(truth)
+
         return truth
+
+    def make_noise(self, sigma_set):
+        # iterate through the RoadImage objects, pulling out the pillow image object
+        sigmas = []
+        count = 0
+        for i, image in enumerate(self.images):
+
+            # normally distributed noise
+            # generate mean and standard deviation
+            # mu = np.random.normal(0, 10, 1)
+            # sigma = np.random.normal(0, 10, 1)
+            sigma = sigma_set
+            sigma = np.random.uniform(0,sigma,1)
+            sigma = sigma[0]
+            # sigma = 10
+            noisy_func = lambda x: x + ((np.random.normal(0, sigma, len(x)) * np.sqrt(x)) )
+            # print("SIGMA: " + str(sigma[0]))
+            sigmas.append(sigma)
+            pixel_array = np.asarray(image.img, 'float32')
+            # image.img.show()
+            
+            # must transpose indices to make RGB dim first
+            pixel_array = pixel_array.transpose(2,0,1)
+            print(len(pixel_array))
+            # iterate through the color channels and add noise
+            channels = []
+            for c_channel in pixel_array:
+                channels.append([noisy_func(xi) for xi in c_channel])
+            noisy_tensor = torch.tensor(channels)
+            print(noisy_tensor)
+            noisy_tensor = torch.clamp(noisy_tensor, min=0, max=255)
+            print(noisy_tensor)
+            demo_array = np.moveaxis(noisy_tensor.numpy(), 0, -1)
+            demo_array = demo_array.transpose(2,0,1)
+            demo_array = torch.tensor(demo_array).numpy()
+ 
+            self.truth.append([float(sigma)])
+
+            self.image_data.append(demo_array)
+
+            count = i
+        
+        print("average sigmas: " + str(np.sum(np.array(sigmas))/count + 1))
+        print("SD sigmas: " + str(np.std(sigmas)))
+
     
     def get_annotations(self,  annotations_file):
         data = {'name':[], 'truth':[]}
@@ -29,7 +86,7 @@ class ImgLoader():
     
     def getLoaders(self, annotations_file, img_dir,transform, target_transform):
         annotations_pd = self.get_annotations(annotations_file)
-        dataset = Dataset(annotations_file, img_dir, transform, target_transform)
+        dataset = Dataset(annotations_file, img_dir, transform, target_transform, self.image_data)
         return (dataset, annotations_pd)
 
     def save_file(self, img_index, path, format = 'png'):
