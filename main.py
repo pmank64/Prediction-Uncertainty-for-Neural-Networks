@@ -31,8 +31,8 @@ results_data = 'C:/Users/pmank/Dropbox/BU/NVIDIA/Part 2 - Prediction-Uncertainty
 model_directory = 'C:/Users/pmank/Dropbox/BU/NVIDIA/Part 2 - Prediction-Uncertainty-for-Neural-Networks/model.pt'
 
 
-learning_rate = 3e-07
-num_epochs = 100
+learning_rate = 3e-05
+num_epochs = 30
 num_epochs_to_print = 1
 
 # fix random seeds so that results are reproduceable from run to run
@@ -43,7 +43,7 @@ np.random.seed(0)
 ##GENERATE IMAGES#####
 truth = []
 images = []
-num_images = 2500
+num_images = 2000
 start_valid = num_images / 2
 if start_valid > num_images -1:
     start_valid = num_images -1
@@ -73,7 +73,7 @@ loader.make_noise(100)
 data_loaders, annotations_pd = loader.getLoaders(transform = transforms.ToTensor(), target_transform = transforms.ToTensor(), annotations_file = directory_data + 'annotations.csv', img_dir = path)
 
 dataset = data_loaders
-batch_size = 10
+batch_size = 50
 validation_split = .3
 shuffle_dataset = True
 random_seed= 42
@@ -170,7 +170,7 @@ plt.show()
 
 # ##VIEW AN IMAGE########
 # change img_idx to view a different image with the truth and predicted lines
-img_idx = 20
+img_idx = 1999
 # demo_array = np.moveaxis(images_valid[img_idx].numpy(), 0, -1)
 demo_array = np.moveaxis(data_loaders.__getitem__(img_idx)[0].numpy(), 0, -1)
 demo_array = torch.tensor(demo_array).numpy()

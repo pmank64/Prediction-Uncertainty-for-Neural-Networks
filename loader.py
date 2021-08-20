@@ -8,8 +8,8 @@ class ImgLoader():
         self.truth = []
         self.pred = []
         self.image_data = []
-        # self.mu = 0
-        # self.sigma = 1000
+        self.mu = 0
+        self.sigma = 1000
 
     def reset(self):
         self.images = []
@@ -33,21 +33,8 @@ class ImgLoader():
 
     def make_noise(self, sigma_set):
         # iterate through the RoadImage objects, pulling out the pillow image object
-        sigmas = []
-        count = 0
-        for i, image in enumerate(self.images):
-
-            # normally distributed noise
-            # generate mean and standard deviation
-            # mu = np.random.normal(0, 10, 1)
-            # sigma = np.random.normal(0, 10, 1)
-            sigma = sigma_set
-            sigma = np.random.uniform(0,sigma,1)
-            sigma = sigma[0]
-            # sigma = 10
-            noisy_func = lambda x: x + ((np.random.normal(0, sigma, len(x)) * np.sqrt(x)) )
-            # print("SIGMA: " + str(sigma[0]))
-            sigmas.append(sigma)
+        noisy_func = lambda x: x + ((np.random.normal(self.mu, self.sigma, len(x)) * np.sqrt(x)) )
+        for image in self.images:
             pixel_array = np.asarray(image.img, 'float32')
             # image.img.show()
             
@@ -65,16 +52,8 @@ class ImgLoader():
             demo_array = np.moveaxis(noisy_tensor.numpy(), 0, -1)
             demo_array = demo_array.transpose(2,0,1)
             demo_array = torch.tensor(demo_array).numpy()
- 
-            self.truth.append([float(sigma)])
 
             self.image_data.append(demo_array)
-
-            count = i
-        
-        print("average sigmas: " + str(np.sum(np.array(sigmas))/count + 1))
-        print("SD sigmas: " + str(np.std(sigmas)))
-
     
     def get_annotations(self,  annotations_file):
         data = {'name':[], 'truth':[]}

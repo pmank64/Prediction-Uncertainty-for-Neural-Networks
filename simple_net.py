@@ -16,7 +16,7 @@ class simpleNet(torch.nn.Module):
     )
     self.fc_layer2 = torch.nn.Sequential(
         # torch.nn.Linear(sizeOutChannels2*750*1000, sizeHiddenLayer),
-        torch.nn.Linear(16*375*500, 1)
+        torch.nn.Linear(16*375*500, 2)
         # torch.nn.LeakyReLU(),
         # decide if we need this later?
         # torch.nn.Dropout(p=0.2),

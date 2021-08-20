@@ -10,10 +10,12 @@ In this project, I will be exploring Amini et. al.’s method by first creating 
 
 1. Use the Pillow package in Python to generate a test and train dataset of varying artificially generated images of a straight road. These images will be constructed simply from shapes using Python.
 2. Implement a Convolutional Neural Network in PyTorch that can predict the center of the lane where a car should be driving (the input will be the images, and the output will be two values which will represent the location of the center of the lane).
-3. Start to add noise to the images (adding color transformations and other effects), and implement Amini et. al.’s method, building a Neural Network to calculate prediction uncertainty for regression.
-4. If time permits, use the Kitti Vision dataset [2] which consists of real images, and apply the findings from the above steps to this real-world data.
+3. Add noise to the images and measure the effect on the training and validation loss given different noise levels
+4. Understand Amini et. al.’s method of using a Normalized Inverse Gamma function to determine epistemic uncertainty
 
-A big challenge in gathering training data for self-driving car neural networks is dealing with the large quantities of data that are collected from vehicles. This project has application for real problems that exist in the self-driving space today – developing a benchmark to determine when to save a piece of training data can reduce costs in both the storage of data, and computation time when training new models.
+Future Work: Finish the process of converting Amini et. al.’s Github repository to PyTorch, and implement his method for this problem. Also, use the KITTI Vision dataset [2] which consists of real images, and apply the findings to this real-world data.
+
+A big challenge in gathering training data for self-driving car neural networks is dealing with the large quantities of data that are collected from vehicles. This project has application for real problems that exist in the self-driving space today – developing a benchmark to determine when to save a piece of training data can reduce costs in both the storage of data, and computation time when training new models. And of course, this project also has the potential to make self-driving vehicles safer by allowing the driver to know when the car is not confident about its predictions.
 
 I am reporting to and collaborating with Dr. Larry Jackel, President of North-C Technologies.
 
@@ -30,4 +32,4 @@ Reference to the Lenet5 neural network, and much of the code that was used for t
 * RoadImage.py: Every training and validation image is represented by a RoadImage object which stored the actual image object and information about how that image was created
 * roadNet.py: The PyTorch code for the actual neural network
 * lenet5.py: PyTorch code for the Lenet5 Neural Network
-* loader.py: The loader class stores all of the image data, and communicates with other classes to read and write data to the disk, and implement the dataloaders
+* loader.py: The loader class stores all of the image data, and communicates with other classes to read and write data to the disk, and implement the dataloaders. It also contains a function to add noise to the images.
